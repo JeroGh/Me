@@ -23,14 +23,6 @@ const PROJECTS = [
     code: 'https://github.com/JeroGh/Schoolevent',
   },
   {
-    title: 'git-demo',
-    category: 'Learning',
-    description: 'A small repository for practising Git and GitHub workflows.',
-    tags: ['Git'],
-    live: '',
-    code: 'https://github.com/JeroGh/git-demo',
-  },
-  {
     title: 'catchit',
     category: 'JavaScript',
     description: 'A JavaScript game project focused on interaction, timing and feedback.',
@@ -39,28 +31,12 @@ const PROJECTS = [
     code: 'https://github.com/JeroGh/catchit',
   },
   {
-    title: 'game',
-    category: 'JavaScript',
-    description: 'A browser game experiment built with vanilla JavaScript.',
-    tags: ['JavaScript'],
-    live: '',
-    code: 'https://github.com/JeroGh/game',
-  },
-  {
     title: 'EventManagement',
     category: 'Web app',
     description: 'An event management project for presenting and coordinating event information.',
     tags: ['HTML'],
     live: '',
     code: 'https://github.com/JeroGh/EventManagement',
-  },
-  {
-    title: 'receipt',
-    category: 'Tools',
-    description: 'A lightweight receipt project with a clean, focused interface.',
-    tags: ['CSS'],
-    live: '',
-    code: 'https://github.com/JeroGh/receipt',
   },
   {
     title: 'L.-Receipt',
@@ -77,14 +53,6 @@ const PROJECTS = [
     tags: ['HTML', 'CSS', 'JavaScript'],
     live: 'https://real-estate-nu-cyan.vercel.app',
     code: 'https://github.com/JeroGh/RealEstate',
-  },
-  {
-    title: 'Me',
-    category: 'Portfolio',
-    description: 'This personal portfolio site, built by hand with HTML, CSS and JavaScript.',
-    tags: ['HTML', 'CSS', 'JavaScript'],
-    live: '',
-    code: 'https://github.com/JeroGh/Me',
   },
 ];
 
