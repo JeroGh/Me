@@ -134,7 +134,19 @@ filters.addEventListener('click', e => {
   const btn = e.target.closest('button');
   if (!btn) return;
   $$('button', filters).forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-  $$('.project').forEach(el => { el.hidden = btn.textContent !== 'All' && el.dataset.cat !== btn.textContent; });
+  const chosen = btn.textContent;
+  const all = $$('.project');
+  all.forEach(el => {
+    const show = chosen === 'All' || el.dataset.cat === chosen;
+    if (!show && !el.hidden) {
+      el.classList.add('fade-out');
+      el.addEventListener('animationend', () => { el.hidden = true; el.classList.remove('fade-out'); }, { once: true });
+    } else if (show && el.hidden) {
+      el.hidden = false;
+      el.classList.add('fade-in');
+      el.addEventListener('animationend', () => el.classList.remove('fade-in'), { once: true });
+    }
+  });
 });
 
 /* ====== SKILLS (bars animate when scrolled into view) ====== */
@@ -151,7 +163,10 @@ skillsGrid.innerHTML = SKILLS.map(g => `
 const barObserver = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
   entries.forEach(en => {
     if (en.isIntersecting) {
-      $$('.bar-fill', en.target).forEach(b => { b.style.width = b.dataset.pct + '%'; });
+      $$('.bar-fill', en.target).forEach((b, i) => {
+        // Stagger each bar's animation
+        setTimeout(() => { b.style.width = b.dataset.pct + '%'; }, i * 120);
+      });
       barObserver.unobserve(en.target);
     }
   });
@@ -162,16 +177,46 @@ if (barObserver) {
   $$('.bar-fill').forEach(b => { b.style.width = b.dataset.pct + '%'; });
 }
 
-/* ====== SCROLL-SPY NAV ====== */
+/* ====== SCROLL-SPY NAV + SLIDING PILL ====== */
 const links = $$('.nav a');
+
+// Create the sliding pill
+const pill = document.createElement('span');
+pill.className = 'nav-pill';
+nav.prepend(pill);
+
+function movePill(el) {
+  if (!el) { pill.style.opacity = '0'; return; }
+  const navRect = nav.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
+  pill.style.opacity = '1';
+  pill.style.width = rect.width + 'px';
+  pill.style.height = rect.height + 'px';
+  pill.style.top = (rect.top - navRect.top) + 'px';
+  pill.style.transform = `translateX(${rect.left - navRect.left}px)`;
+}
+
+function updatePill() {
+  const active = links.find(a => a.classList.contains('active'));
+  movePill(active || null);
+}
+
 const spy = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
   entries.forEach(en => {
     if (en.isIntersecting) {
       links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + en.target.id));
+      updatePill();
     }
   });
 }, { rootMargin: '-45% 0px -50% 0px' }) : null;
 if (spy) $$('main section[id]').forEach(s => spy.observe(s));
+
+// Initialize pill on load
+requestAnimationFrame(() => {
+  pill.style.transition = 'none';
+  updatePill();
+  requestAnimationFrame(() => { pill.style.transition = ''; });
+});
 
 /* ====== CONTACT FORM (opens the visitor's email app) ====== */
 $('#contactForm').addEventListener('submit', e => {
@@ -192,3 +237,36 @@ $('#contactForm').addEventListener('submit', e => {
 });
 
 $('#year').textContent = new Date().getFullYear();
+
+/* ====== HEADER SHADOW ON SCROLL ====== */
+const header = $('.site-header');
+window.addEventListener('scroll', () => {
+  header.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+/* ====== SCROLL REVEAL ====== */
+const revealTargets = [
+  ...$$('.section > h2'),
+  ...$$('.section > p.lead'),
+  ...$$('.section-head'),
+  ...$$('.project'),
+  ...$$('.skill-group'),
+  ...$$('.about-text p'),
+  ...$$('.form'),
+  ...$$('.contact > h2'),
+  ...$$('.contact > p'),
+];
+revealTargets.forEach((el, i) => {
+  el.classList.add('reveal');
+  el.style.transitionDelay = (i % 4) * 0.07 + 's';
+});
+const revealObs = 'IntersectionObserver' in window ? new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      en.target.classList.add('visible');
+      revealObs.unobserve(en.target);
+    }
+  });
+}, { threshold: 0.12 }) : null;
+if (revealObs) revealTargets.forEach(el => revealObs.observe(el));
+else revealTargets.forEach(el => el.classList.add('visible'));
